@@ -12,7 +12,6 @@ const Filter = ({ setFilters }) => {
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));
     
-    // Update local state based on the selected filter
     if (field === 'gender') setGender(value);
     if (field === 'species') setSpecies(value);
     if (field === 'status') setStatus(value);

@@ -27,7 +27,7 @@ const PaginationControls = ({ currentPage, totalPages, onPageChange }) => {
         addPageNumber(i);
       }
     } else {
-      // First two pages
+
       addPageNumber(1);
       if (currentPage > 3) pageNumbers.push(<Text key="start-ellipsis">...</Text>);
 

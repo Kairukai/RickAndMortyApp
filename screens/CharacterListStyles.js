@@ -51,7 +51,7 @@ export default StyleSheet.create({
     margin: 5,
     backgroundColor: '#fff',
     borderRadius: 8,
-    width: (width / numColumns) - 20, // Responsive width based on columns
+    width: (width / numColumns) - 20,
     borderColor: '#ddd',
     borderWidth: 1,
   },
