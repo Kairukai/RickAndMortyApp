@@ -1,6 +1,8 @@
+// Filter.js
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import styles from './FilterStyles'; // Import styles
 
 const Filter = ({ setFilters }) => {
   const handleFilterChange = (field, value) => {
@@ -41,18 +43,5 @@ const Filter = ({ setFilters }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  filterContainer: {
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-});
 
 export default Filter;
