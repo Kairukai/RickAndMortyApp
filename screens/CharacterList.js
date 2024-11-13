@@ -75,6 +75,7 @@ const CharacterList = () => {
         onPageChange={setPage}
       />
 
+      {/* Modal for Character Details */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -88,12 +89,17 @@ const CharacterList = () => {
             </TouchableOpacity>
             {selectedCharacter && (
               <>
-                <Text style={styles.detailTitle}>{selectedCharacter.name}</Text>
-                <Image source={{ uri: selectedCharacter.image }} style={styles.detailImage} />
-                <Text>Gender: {selectedCharacter.gender}</Text>
-                <Text>Status: {selectedCharacter.status}</Text>
-                <Text>Species: {selectedCharacter.species}</Text>
-                <Text>Location: {selectedCharacter.location.name}</Text>
+                <Text style={styles.characterName}>{selectedCharacter.name}</Text>
+                <Image source={{ uri: selectedCharacter.image }} style={styles.characterImage} />
+                <View style={styles.statusContainer}>
+                  <Text style={[styles.statusText, { color: selectedCharacter.status === 'Alive' ? 'green' : selectedCharacter.status === 'Dead' ? 'red' : 'gray' }]}>
+                    {selectedCharacter.status}
+                  </Text>
+                </View>
+                <Text style={styles.characterDetail}><Text style={styles.boldText}>Gender:</Text> {selectedCharacter.gender}</Text>
+                <Text style={styles.characterDetail}><Text style={styles.boldText}>Location:</Text> {selectedCharacter.location.name}</Text>
+                <Text style={styles.characterDetail}><Text style={styles.boldText}>Origin:</Text> {selectedCharacter.origin.name}</Text>
+                <Text style={styles.characterDetail}><Text style={styles.boldText}>Species:</Text> {selectedCharacter.species}</Text>
               </>
             )}
           </View>
@@ -134,16 +140,38 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  detailTitle: {
+  characterName: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
-  detailImage: {
+  characterImage: {
     width: 150,
     height: 150,
     borderRadius: 8,
     marginBottom: 10,
+  },
+  statusContainer: {
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+  },
+  statusText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  characterDetail: {
+    fontSize: 14,
+    marginVertical: 2,
+    textAlign: 'left',
+    width: '100%',
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
 });
 
