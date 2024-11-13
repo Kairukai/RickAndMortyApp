@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Image, TextInput } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import axios from 'axios';
-import styles from './CharacterListStyles';
+import SearchBar from './SearchBar';
+import Filter from './Filter';
+import SortButton from './SortButton';
+import CharacterCard from './CharacterCard';
 
 const CharacterList = () => {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  
+  const [filters, setFilters] = useState({ gender: '', species: '', status: '' });
+  const [sorted, setSorted] = useState(false);
+
   useEffect(() => {
     fetchCharacters();
   }, []);
-  
+
   const fetchCharacters = () => {
     setLoading(true);
     axios.get('https://rickandmortyapi.com/api/character')
@@ -24,10 +29,15 @@ const CharacterList = () => {
         setLoading(false);
       });
   };
-  
-  const filteredCharacters = characters.filter(character =>
-    character.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  const filteredCharacters = characters
+    .filter(character =>
+      character.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (filters.gender ? character.gender === filters.gender : true) &&
+      (filters.species ? character.species === filters.species : true) &&
+      (filters.status ? character.status === filters.status : true)
+    )
+    .sort((a, b) => sorted ? a.name.localeCompare(b.name) : 0);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -35,27 +45,29 @@ const CharacterList = () => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search for a character..."
-        value={searchTerm}
-        onChangeText={text => setSearchTerm(text)}
-      />
-      
-      <FlatList
-        data={filteredCharacters}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.characterCard}>
-            <Image source={{ uri: item.image }} style={styles.characterImage} />
-            <Text style={styles.characterName}>{item.name}</Text>
-            <Text style={styles.characterStatus}>{item.status}</Text>
-            <Text style={styles.characterDetails}>{item.species} - {item.gender}</Text>
-          </View>
-        )}
-      />
+      <SearchBar setSearchTerm={setSearchTerm} />
+      <Filter setFilters={setFilters} />
+      <SortButton setSorted={setSorted} />
+      <View style={styles.cardContainer}>
+        {filteredCharacters.map(character => (
+          <CharacterCard key={character.id} character={character} />
+        ))}
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+});
 
 export default CharacterList;

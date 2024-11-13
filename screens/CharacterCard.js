@@ -2,24 +2,11 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 const CharacterCard = ({ character }) => {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Alive':
-        return 'green';
-      case 'Dead':
-        return 'red';
-      default:
-        return 'gray';
-    }
-  };
-
   return (
     <View style={styles.card}>
       <Image source={{ uri: character.image }} style={styles.image} />
       <Text style={styles.name}>{character.name}</Text>
-      <Text style={[styles.status, { color: getStatusColor(character.status) }]}>
-        {character.status}
-      </Text>
+      <Text style={styles.status}>{character.status}</Text>
       <Text style={styles.details}>{character.species} - {character.gender}</Text>
     </View>
   );
@@ -27,38 +14,27 @@ const CharacterCard = ({ character }) => {
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
-    margin: 8,
-    padding: 10,
+    width: '48%', // Adjust this for 2 columns per row
     backgroundColor: '#fff',
+    padding: 10,
+    marginVertical: 8,
     borderRadius: 8,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
   },
   image: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    marginBottom: 10,
   },
   name: {
     fontWeight: 'bold',
-    fontSize: 16,
-    textAlign: 'center',
+    marginTop: 5,
   },
   status: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginTop: 5,
+    color: 'green',
   },
   details: {
-    fontSize: 12,
     color: 'gray',
-    marginTop: 5,
-    textAlign: 'center',
   },
 });
 
