@@ -1,54 +1,40 @@
+// CharacterList.js
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, FlatList, StyleSheet, Modal, Text, Image, TouchableOpacity, Button } from 'react-native';
+import { View, ActivityIndicator, FlatList, StyleSheet, Modal, Text, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import SearchBar from './SearchBar';
 import Filter from './Filter';
 import SortButton from './SortButton';
 import CharacterCard from './CharacterCard';
+import PaginationControls from './PaginationControls';
 
 const CharacterList = () => {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({ gender: '', species: '', status: '' });
   const [sorted, setSorted] = useState(false);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [selectedCharacter, setSelectedCharacter] = useState(null); // State for selected character
-  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     fetchCharacters();
   }, [page]);
 
   const fetchCharacters = () => {
-    if (!hasMore) return;
-
-    setLoading(page === 1);
-    setLoadingMore(page > 1);
-
+    setLoading(true);
     axios.get(`https://rickandmortyapi.com/api/character?page=${page}`)
       .then(response => {
-        setCharacters(prevCharacters => [
-          ...prevCharacters,
-          ...response.data.results
-        ]);
-        setHasMore(response.data.info.next !== null); // Check if there is another page
+        setCharacters(response.data.results);
+        setTotalPages(response.data.info.pages); // Total pages from API response
         setLoading(false);
-        setLoadingMore(false);
       })
       .catch(error => {
         console.error(error);
         setLoading(false);
-        setLoadingMore(false);
       });
-  };
-
-  const loadMoreCharacters = () => {
-    if (!loadingMore && hasMore) {
-      setPage(prevPage => prevPage + 1);
-    }
   };
 
   const filteredCharacters = characters
@@ -81,20 +67,24 @@ const CharacterList = () => {
         renderItem={({ item }) => (
           <CharacterCard
             character={item}
-            onPress={() => openModal(item)} // Open modal on click
+            onPress={openModal}  // Pass the openModal function
           />
         )}
         numColumns={2}
         contentContainerStyle={styles.listContent}
-        onEndReached={loadMoreCharacters} // Trigger loading more on reaching end of list
-        onEndReachedThreshold={0.5} // Load more when user is halfway through the list
-        ListFooterComponent={loadingMore ? <ActivityIndicator size="small" color="#0000ff" /> : null}
+        ListFooterComponent={loading ? <ActivityIndicator size="small" color="#0000ff" /> : null}
       />
-      {/* Modal for Character Details */}
+      <PaginationControls
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={(newPage) => setPage(newPage)}
+      />
+
+
       <Modal
         visible={modalVisible}
-        animationType="slide"
         transparent={true}
+        animationType="slide"
         onRequestClose={closeModal}
       >
         <View style={styles.modalBackground}>
@@ -137,7 +127,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: '80%',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
   },
@@ -148,17 +138,16 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
   },
   detailTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginVertical: 10,
   },
   detailImage: {
     width: 150,
     height: 150,
-    borderRadius: 8,
+    borderRadius: 10,
     marginBottom: 10,
   },
 });

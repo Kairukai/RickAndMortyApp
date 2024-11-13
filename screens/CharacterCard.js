@@ -1,9 +1,10 @@
+// CharacterCard.js
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 const CharacterCard = ({ character, onPress }) => {
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity style={styles.card} onPress={() => onPress(character)}>
       <Image source={{ uri: character.image }} style={styles.image} />
       <Text style={styles.name}>{character.name}</Text>
       <Text style={styles.status}>{character.status}</Text>

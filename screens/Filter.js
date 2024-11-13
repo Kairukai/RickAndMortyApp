@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import styles from './FilterStyles'; // Import styles
+import styles from './FilterStyles';
 
 const Filter = ({ setFilters }) => {
   const handleFilterChange = (field, value) => {
