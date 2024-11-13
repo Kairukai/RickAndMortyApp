@@ -1,39 +1,43 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-const CharacterCard = ({ character }) => {
+const CharacterCard = ({ character, onPress }) => {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
       <Image source={{ uri: character.image }} style={styles.image} />
       <Text style={styles.name}>{character.name}</Text>
       <Text style={styles.status}>{character.status}</Text>
       <Text style={styles.details}>{character.species} - {character.gender}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    width: '48%', // Adjust this for 2 columns per row
-    backgroundColor: '#fff',
+    flex: 1,
     padding: 10,
-    marginVertical: 8,
+    margin: 5,
+    backgroundColor: '#fff',
     borderRadius: 8,
     alignItems: 'center',
   },
   image: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: 8,
+    marginBottom: 10,
   },
   name: {
     fontWeight: 'bold',
-    marginTop: 5,
+    fontSize: 16,
   },
   status: {
+    fontSize: 12,
     color: 'green',
+    marginTop: 5,
   },
   details: {
+    fontSize: 12,
     color: 'gray',
   },
 });

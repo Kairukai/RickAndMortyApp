@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, FlatList, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, FlatList, StyleSheet, Modal, Text, Image, TouchableOpacity, Button } from 'react-native';
 import axios from 'axios';
 import SearchBar from './SearchBar';
 import Filter from './Filter';
@@ -15,6 +15,8 @@ const CharacterList = () => {
   const [sorted, setSorted] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedCharacter, setSelectedCharacter] = useState(null); // State for selected character
+  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
 
   useEffect(() => {
     fetchCharacters();
@@ -58,6 +60,16 @@ const CharacterList = () => {
     )
     .sort((a, b) => sorted ? a.name.localeCompare(b.name) : 0);
 
+  const openModal = (character) => {
+    setSelectedCharacter(character);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedCharacter(null);
+  };
+
   return (
     <View style={styles.container}>
       <SearchBar setSearchTerm={setSearchTerm} />
@@ -66,13 +78,43 @@ const CharacterList = () => {
       <FlatList
         data={filteredCharacters}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <CharacterCard character={item} />}
+        renderItem={({ item }) => (
+          <CharacterCard
+            character={item}
+            onPress={() => openModal(item)} // Open modal on click
+          />
+        )}
         numColumns={2}
         contentContainerStyle={styles.listContent}
         onEndReached={loadMoreCharacters} // Trigger loading more on reaching end of list
         onEndReachedThreshold={0.5} // Load more when user is halfway through the list
         ListFooterComponent={loadingMore ? <ActivityIndicator size="small" color="#0000ff" /> : null}
       />
+      {/* Modal for Character Details */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>X</Text>
+            </TouchableOpacity>
+            {selectedCharacter && (
+              <>
+                <Text style={styles.detailTitle}>{selectedCharacter.name}</Text>
+                <Image source={{ uri: selectedCharacter.image }} style={styles.detailImage} />
+                <Text>Gender: {selectedCharacter.gender}</Text>
+                <Text>Status: {selectedCharacter.status}</Text>
+                <Text>Species: {selectedCharacter.species}</Text>
+                <Text>Location: {selectedCharacter.location.name}</Text>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -85,6 +127,39 @@ const styles = StyleSheet.create({
   },
   listContent: {
     justifyContent: 'space-between',
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  detailTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  detailImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 10,
   },
 });
 
