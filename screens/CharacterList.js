@@ -25,15 +25,17 @@ const CharacterList = () => {
   const fetchCharacters = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://rickandmortyapi.com/api/character?page=${page}`);
-      let results = response.data.results;
+      const response = await axios.get(`https://rickandmortyapi.com/api/character`, {
+        params: {
+          page,
+          name: searchTerm,
+          gender: filters.gender || undefined, // Send only if selected
+          species: filters.species || undefined,
+          status: filters.status || undefined,
+        },
+      });
 
-      results = results.filter(character =>
-        character.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (filters.gender ? character.gender === filters.gender : true) &&
-        (filters.species ? character.species === filters.species : true) &&
-        (filters.status ? character.status === filters.status : true)
-      );
+      let results = response.data.results;
 
       if (sorted) {
         results = results.sort((a, b) => a.name.localeCompare(b.name));
@@ -73,12 +75,7 @@ const CharacterList = () => {
         contentContainerStyle={styles.listContent}
         ListFooterComponent={loading ? <ActivityIndicator size="small" color="#0000ff" /> : null}
       />
-      <PaginationControls
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
-
+      <PaginationControls currentPage={page} totalPages={totalPages} onPageChange={setPage} />
 
       <Modal
         visible={modalVisible}
