@@ -1,19 +1,38 @@
-// Filter.js
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Button, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import styles from './FilterStyles';
 
 const Filter = ({ setFilters }) => {
+
+  const [gender, setGender] = useState('');
+  const [species, setSpecies] = useState('');
+  const [status, setStatus] = useState('');
+
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));
+    
+    // Update local state based on the selected filter
+    if (field === 'gender') setGender(value);
+    if (field === 'species') setSpecies(value);
+    if (field === 'status') setStatus(value);
+  };
+
+  const clearFilters = () => {
+
+    setFilters({ gender: '', species: '', status: '' });
+
+    setGender('');
+    setSpecies('');
+    setStatus('');
   };
 
   return (
     <View style={styles.filterContainer}>
       <Text>Filter</Text>
+
       <Picker
-        selectedValue=""
+        selectedValue={gender}
         style={styles.picker}
         onValueChange={value => handleFilterChange('gender', value)}
       >
@@ -21,8 +40,9 @@ const Filter = ({ setFilters }) => {
         <Picker.Item label="Male" value="Male" />
         <Picker.Item label="Female" value="Female" />
       </Picker>
+
       <Picker
-        selectedValue=""
+        selectedValue={species}
         style={styles.picker}
         onValueChange={value => handleFilterChange('species', value)}
       >
@@ -30,8 +50,9 @@ const Filter = ({ setFilters }) => {
         <Picker.Item label="Human" value="Human" />
         <Picker.Item label="Alien" value="Alien" />
       </Picker>
+
       <Picker
-        selectedValue=""
+        selectedValue={status}
         style={styles.picker}
         onValueChange={value => handleFilterChange('status', value)}
       >
@@ -40,6 +61,10 @@ const Filter = ({ setFilters }) => {
         <Picker.Item label="Dead" value="Dead" />
         <Picker.Item label="unknown" value="unknown" />
       </Picker>
+
+      <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
+        <Text style={styles.clearButtonText}>Clear Filter</Text>
+      </TouchableOpacity>
     </View>
   );
 };

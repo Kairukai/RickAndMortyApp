@@ -12,6 +12,21 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
   },
+
+  clearButton: {
+    backgroundColor: '#007bff',
+    padding: 8,
+    borderRadius: 4,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  clearButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  
 });
+
+
 
 export default styles;
