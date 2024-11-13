@@ -20,13 +20,26 @@ const CharacterList = () => {
 
   useEffect(() => {
     fetchCharacters();
-  }, [page]);
+  }, [page, searchTerm, filters, sorted]);
 
   const fetchCharacters = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`https://rickandmortyapi.com/api/character?page=${page}`);
-      setCharacters(response.data.results);
+      let results = response.data.results;
+
+      results = results.filter(character =>
+        character.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (filters.gender ? character.gender === filters.gender : true) &&
+        (filters.species ? character.species === filters.species : true) &&
+        (filters.status ? character.status === filters.status : true)
+      );
+
+      if (sorted) {
+        results = results.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      setCharacters(results);
       setTotalPages(response.data.info.pages);
       setLoading(false);
     } catch (error) {
@@ -45,22 +58,13 @@ const CharacterList = () => {
     setSelectedCharacter(null);
   };
 
-  const filteredCharacters = characters
-    .filter(character =>
-      character.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (filters.gender ? character.gender === filters.gender : true) &&
-      (filters.species ? character.species === filters.species : true) &&
-      (filters.status ? character.status === filters.status : true)
-    )
-    .sort((a, b) => (sorted ? a.name.localeCompare(b.name) : 0));
-
   return (
     <View style={styles.container}>
       <SearchBar setSearchTerm={setSearchTerm} />
       <Filter setFilters={setFilters} />
       <SortButton setSorted={setSorted} />
       <FlatList
-        data={filteredCharacters}
+        data={characters}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <CharacterCard character={item} onPress={() => openModal(item)} />
@@ -75,7 +79,7 @@ const CharacterList = () => {
         onPageChange={setPage}
       />
 
-      {/* Modal for Character Details */}
+
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -91,10 +95,8 @@ const CharacterList = () => {
               <>
                 <Text style={styles.characterName}>{selectedCharacter.name}</Text>
                 <Image source={{ uri: selectedCharacter.image }} style={styles.characterImage} />
-                <View style={styles.statusContainer}>
-                  <Text style={[styles.statusText, { color: selectedCharacter.status === 'Alive' ? 'green' : selectedCharacter.status === 'Dead' ? 'red' : 'gray' }]}>
-                    {selectedCharacter.status}
-                  </Text>
+                <View style={[styles.statusContainer, { backgroundColor: selectedCharacter.status === 'Alive' ? 'green' : selectedCharacter.status === 'Dead' ? 'red' : 'gray' }]}>
+                  <Text style={styles.statusText}>{selectedCharacter.status}</Text>
                 </View>
                 <Text style={styles.characterDetail}><Text style={styles.boldText}>Gender:</Text> {selectedCharacter.gender}</Text>
                 <Text style={styles.characterDetail}><Text style={styles.boldText}>Location:</Text> {selectedCharacter.location.name}</Text>
@@ -153,7 +155,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   statusContainer: {
-    backgroundColor: '#e0e0e0',
     borderRadius: 5,
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -162,6 +163,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#fff',
     textAlign: 'center',
   },
   characterDetail: {

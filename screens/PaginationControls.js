@@ -5,7 +5,6 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 const PaginationControls = ({ currentPage, totalPages, onPageChange }) => {
   const renderPageNumbers = () => {
     const pageNumbers = [];
-    
 
     const addPageNumber = (page) => {
       pageNumbers.push(
@@ -21,13 +20,11 @@ const PaginationControls = ({ currentPage, totalPages, onPageChange }) => {
       );
     };
 
-
     if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) {
         addPageNumber(i);
       }
     } else {
-
       addPageNumber(1);
       if (currentPage > 3) pageNumbers.push(<Text key="start-ellipsis">...</Text>);
 
@@ -36,9 +33,6 @@ const PaginationControls = ({ currentPage, totalPages, onPageChange }) => {
       }
 
       if (currentPage < totalPages - 2) pageNumbers.push(<Text key="end-ellipsis">...</Text>);
-
-
-      addPageNumber(totalPages - 1);
       addPageNumber(totalPages);
     }
 
